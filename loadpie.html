@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="d3.js"></script>
+</head>
+<body>
+<button id="bt1" onclick="bt1_clicked()">click to change</button>
+<script src="InteractivePieOOP.js"></script>
+<script >
+
+    var colorLinear=d3.scale.linear()
+        .domain([0.5,0.75,1])
+        .range(["#A63B34","#FFE49B","#5187CB"]);
+
+    //sample data
+    mydata=[
+        {"name":12, "value":0.4, "flag":true},
+        {"name":13, "value":0.5, "flag":false},
+        {"name":14, "value":0.62, "flag":true},
+        {"name":22, "value":0.85, "flag":false},
+        {"name":32, "value":0.78, "flag":true},
+        {"name":42, "value":0.9, "flag":true},
+    ]
+
+    // sample layers
+    // layers is required for composit chart
+    layers=[
+        [0.2,0.4,0.6,0.8,1],
+        ["#98abc5", "#7b6888", "#6b486b", "#a05d56", "#ff8c00"]
+    ]
+
+    //creation
+    svg=IDP.create_svg(50,50);
+
+    // example for creating simple charts
+    chart1= new IDP(svg,0,1,mydata);
+    chart1.d_outerRadius=function(d){return d.data.value * chart1.radius;};
+    chart1.create();
+
+    chart2 = new IDP(svg,0,1,mydata);
+    chart2.d_innerRadius=22;
+    chart2.d_outerRadius=25;
+    chart2.d_data_color=function(d){if(d.data.flag) return "#8BBC58"; return "#9C4831";};
+    chart2.d_label="";
+    chart2.create();
+
+    // example for creating composit charts
+    // svg2=IDP.create_svg(150,150);
+    // comp=new IDP_Composit(svg2,0,1,layers,mydata);
+
+    //interaction
+    bt1_clicked=function(){
+        console.log("cutton clicked");
+        mydata[0].value*=1.1;
+        mydata[1].value*=1.05;
+        chart1.invalidate(mydata);
+        // comp.invalidate(mydata);
+    }
+
+
+</script>
+</body>
+</html>
