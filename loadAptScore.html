@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="d3.js"></script>
+</head>
+<body>
+<button id="bt1" onclick="bt1_clicked1()">click to change</button>
+<button id="bt2" onclick="bt1_clicked2()">click to change</button>
+<script src="chart_AptScore.js"></script>
+<script >
+
+    var colorLinear=d3.scale.linear()
+        .domain([0.5,0.75,1.1])
+        .range(["#A63B34","#FFE49B","#5187CB"]);
+
+    //sample data
+    mydata=[
+        {"name":12, "value":0.4, "flag":true},
+        {"name":13, "value":0.5, "flag":false},
+        {"name":14, "value":0.62, "flag":true},
+        {"name":22, "value":0.85, "flag":false},
+        {"name":32, "value":0.78, "flag":true},
+        {"name":42, "value":0.9, "flag":true},
+    ]
+
+    //creation
+    svg=IDP.create_svg(100,100);
+    chart_score=new ChartAptScore(svg,mydata);
+
+    //interaction
+    bt1_clicked1=function(){
+        console.log("cutton clicked");
+        var val0=mydata[0].value;
+        var val1=mydata[1].value;
+        if (mydata[0].value <1)
+            val0=mydata[0].value * 1.1;
+        if (mydata[1].value>0.1)
+            val1=mydata[1].value * 0.9;
+
+        IDP.set_data_value(mydata,0,val0)
+        IDP.set_data_value(mydata,1,val1)
+        chart_score.invalidate(mydata);
+        // comp.invalidate(mydata);
+    }
+
+    bt1_clicked2=function(){
+        console.log("cutton clicked");
+        var val0=mydata[1].value;
+        var val1=mydata[0].value;
+        if (mydata[1].value <1)
+            val0=mydata[1].value * 1.1;
+        if (mydata[0].value>0.1)
+            val1=mydata[0].value * 0.9;
+
+        IDP.set_data_value(mydata,1,val0)
+        IDP.set_data_value(mydata,0,val1)
+        chart_score.invalidate(mydata);
+        // comp.invalidate(mydata);
+    }
+
+</script>
+</body>
+</html>

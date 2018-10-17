@@ -2,7 +2,7 @@ var color = d3.scale.ordinal()
     .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
 
 var colorLinear=d3.scale.linear()
-    .domain([0,0.5,1])
+    .domain([0,0.5,1.1])
     .range(["#A63B34","#FFE49B","#5187CB"]);
 
 mydata=[
@@ -48,7 +48,9 @@ class IDP{
         this.d_pie_val=function(d){return 1;};
         this.d_name=function(d){return d.name;};
         this.d_label=function(d){return d.data.name;};
-        this.d_outerRadius=this.d_outerRadiusCap;
+        this.d_outerRadius=function(d){
+            return d.data.value * this.radius
+        };
         this.d_innerRadius=this.minR;
         this.d_data_color=function(d){
             var c=colorLinear(d.data.value)
@@ -125,6 +127,75 @@ class IDP{
             .style("fill", this.d_data_color);
     };
 
+}
+
+class ChartAptScore{
+    constructor(svg,data){
+        this.minV=0;
+        this.maxV=1;
+        this.data=data;
+
+        this.width=parseInt(svg.attr("width"));
+        this.height=parseInt(svg.attr("height"));
+        this.radius = Math.min(this.width,this.height)/2
+        var separator = this.radius * 0.9;
+        var centerR=this.radius * 0.25;
+
+        // main chart
+        this.chart_main=new IDP(svg,this.minV,this.maxV,data);
+        this.chart_main.radius = separator;
+        this.chart_main.d_innerRadius=centerR;
+        this.chart_main.d_outerRadius=function(d){
+            var offset =  (separator - centerR) * d.data.value;
+            return centerR + offset;
+        }
+
+        // state chart
+        this.chart_state=new IDP(svg,this.minV,this.maxV,data);
+        this.chart_state.d_innerRadius=separator;
+        this.chart_state.d_outerRadius=this.radius;
+        this.chart_state.d_data_color=function(d){if(d.data.flag) return "#6DBC2E"; return "#9C2D1B";};
+
+        //overallscore chart
+        var score=this.overall_score(data)
+        this.chart_overall=new IDP(svg,this.minV,this.maxV,[score]);
+        this.chart_overall.d_innerRadius=0;
+        this.chart_overall.d_outerRadius=function(d){
+            console.log(d.data);
+            return d.data;
+        }
+
+        //create
+        this.chart_main.create();
+        this.chart_state.create();
+        this.chart_overall.create();
+    }
+
+    invalidate(data){
+        this.chart_main.invalidate(data);
+        this.chart_state.invalidate(data);
+        var score=this.overall_score(data);
+        this.chart_overall.invalidate([score]);
+    }
+
+    overall_score(data){
+        var total=0;
+        data.forEach(function(e){
+            total+=e.value;
+        })
+        var score = total / data.length;
+        return score;
+    }
+}
+
+
+IDP.set_data_value=function(data,i,v){
+    var orgVal=data[i].value
+    if (v>=orgVal)
+        data[i].flag=true;
+    else
+        data[i].flag=false;
+    data[i].value=v;
 }
 
 IDP.create_svg=function(width=300,height=300){
