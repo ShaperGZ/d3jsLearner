@@ -9,7 +9,14 @@ class TableSpanInput{
         this.textSizeContent=8;
         this.rows=[]
     }
-    
+
+    addRows(data){
+        self=this;
+        data.forEach(function(d){
+            self.addRow(d);
+        })
+    }
+
     addRow(rowObj){
         console.log("add row d:"+rowObj.name+","+rowObj.value);
         var d=rowObj;
@@ -50,6 +57,14 @@ class TableSpanInput{
         var txt="onValueChanged name:"+name+" value:"+value;
         console.log(txt);
     }
+
+    clearRows(){
+        var count=this.tb.childElementCount;
+        for (var i=0;i<count;i++){
+            console.log(i);
+            this.tb.removeChild(this.tb.childNodes[0]);
+        }
+    }
 }
 
 
@@ -61,10 +76,5 @@ data=[
 
 body=document.getElementsByTagName("body")[0]
 tableBB= new TableSpanInput(body);
-
-data.forEach(function(d){
-    var name=d.name;
-    var value=d.value
-    tableBB.addRow(d);
-})
+tableBB.addRows(data);
 
