@@ -1,3 +1,58 @@
+class TableSpanInput{
+    constructor(parent){
+        this.parent=parent;
+        this.table=document.createElement("table");
+        this.tb=document.createElement("tb");
+        this.table.appendChild(this.tb);
+        this.parent.appendChild(this.table);
+        this.classContent="content";
+        this.textSizeContent=8;
+        this.rows=[]
+    }
+    
+    addRow(rowObj){
+        console.log("add row d:"+rowObj.name+","+rowObj.value);
+        var d=rowObj;
+        var name=d.name;
+        var value=d.value
+        var span=document.createElement("span")
+        span.innerHTML=name
+
+        var input=document.createElement("input")
+        input.type="text"
+        input.class=this.classContent
+        input.value=value
+        input.width=50
+        input.id="tb_"+name;
+        self=this;
+        input.onkeydown=function(key){
+            if (key.keyCode == "13"){
+                value=input.value;
+                self.onValueChange(name,value);
+            }
+        }
+        var tr=document.createElement("tr");
+
+        this.addCell(span,tr);
+        this.addCell(input,tr);
+
+        this.tb.appendChild(tr);
+        this.rows.push(tr);
+    }
+
+    addCell(domObj,row){
+        var td=document.createElement("td");
+        td.appendChild(domObj);
+        row.appendChild(td);
+    }
+
+    onValueChange(name,value){
+        var txt="onValueChanged name:"+name+" value:"+value;
+        console.log(txt);
+    }
+}
+
+
 data=[
     {"name":"bd_ftfh", "value":"6,3"},
     {"name":"un_width","value":"3"},
@@ -5,47 +60,11 @@ data=[
 ]
 
 body=document.getElementsByTagName("body")[0]
-
-tableBB=document.createElement("table");
-tableBB.tb=document.createElement("tb");
-
-function onValueChange(name,value){
-    txt="onValueChanged name:"+name+" value:"+value;
-    console.log(txt);
-}
+tableBB= new TableSpanInput(body);
 
 data.forEach(function(d){
     var name=d.name;
     var value=d.value
-    var span=document.createElement("span")
-    span.innerHTML=name
-
-    var input=document.createElement("input")
-    input.type="text"
-    input.class="content"
-    input.value=value
-    input.width=50
-    input.id="tb_"+name;
-    input.onkeydown=function(key){
-        if (key.keyCode == "13"){
-            value=input.value;
-            onValueChange(name,value);
-        }
-    }
-    // input.text(value)
-
-    var tr=document.createElement("tr")
-    tableBB.append(tr)
-    var td_span=document.createElement("td")
-    td_span.append(span)
-    var td_input=document.createElement("td")
-    td_input.append(input)
-    td_span.width=50
-    td_input.width=50
-    tr.append(td_span)
-    tr.append(td_input)
-
+    tableBB.addRow(d);
 })
 
-body.append(tableBB);
-tableBB.append(tableBB.tb);
